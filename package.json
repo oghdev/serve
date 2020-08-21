@@ -1,0 +1,30 @@
+{
+  "name": "serve",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oghdev/serve.git"
+  },
+  "author": "",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/oghdev/serve/issues"
+  },
+  "homepage": "https://github.com/oghdev/serve#readme",
+  "dependencies": {
+    "@koa/router": "^9.4.0",
+    "koa": "^2.13.0",
+    "koa-body": "^4.2.0",
+    "koa-compose": "^4.1.0",
+    "koa-compress": "^5.0.1",
+    "koa-mount": "^4.0.0",
+    "logger": "https://github.com/oghdev/logger/archive/0.1.2.tar.gz",
+    "serialize-error": "^7.0.1",
+    "uuid": "^8.3.0"
+  }
+}
