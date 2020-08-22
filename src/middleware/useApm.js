@@ -10,23 +10,32 @@ const useApm = (opts) => {
     secretToken: opts.secretToken || process.env.APM_SERVER_TOKEN,
     apiRequestTime: opts.apiRequestTime || '30s',
     metricsInterval: opts.metricsInterval || '10s',
-    loggerInstance: opts.loggerInstance || logger.child({ component: 'apm-agent' }),
+    loggerInstance: opts.loggerInstance || logger.child({ subcomponent: 'apm-agent' }),
     ignoreClientErrors: opts.ignoreClientErrors || true
-  })
+  }, opts || {})
 
-  apm.start({
+  console.log({ opts })
+
+  const config = {
     serviceName: opts.serviceName,
     serviceVersion: opts.serviceVersion,
     serverUrl: opts.serverUrl,
     secretToken: opts.secretToken,
     apiRequestTime: opts.apiRequestTime,
     metricsInterval: opts.metricsInterval,
-    logger: opts.loggerInstance
-  })
+    logger: opts.loggerInstance,
+    active: true,
+    captureExceptions: false
+  }
+
+  apm.start(config)
 
   return async (ctx, next) => {
 
     const requestId = ctx.requestId
+
+    apm.setTransactionName(`${ctx.method} ${ctx.path}`)
+    apm.setLabel('requestId', requestId)
 
     const onError = (error) => {
 
@@ -36,12 +45,20 @@ const useApm = (opts) => {
 
       }
 
-      apm.captureError(error, {
-        request: ctx.req,
-        response: ctx.res,
-        custom: { requestId },
-        labels: { requestId }
-      })
+      try {
+
+        apm.captureError(error, {
+          request: ctx.req,
+          response: ctx.res,
+          custom: { requestId },
+          labels: { requestId }
+        })
+
+      } catch (error) {
+
+        logger.error('Unable to send error to apm', { error })
+
+      }
 
     }
 

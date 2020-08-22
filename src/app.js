@@ -8,7 +8,6 @@ const compose = require('koa-compose')
 
 const logger = require('./logger')
 const middleware = require('./middleware')
-const apm = require('./apm')
 
 const createServer = () => new Koa()
 
@@ -47,9 +46,6 @@ const createApp = (opts) => {
 
     ctx.logger = logger.child({ requestId })
 
-    apm.setTransactionName(`${ctx.method} ${ctx.path}`)
-    apm.setLabel('requestId', requestId)
-    
     return next()
 
   })

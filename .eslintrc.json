@@ -1,0 +1,29 @@
+{
+  "env": {
+    "node": true,
+    "es6": true,
+    "mocha": true
+  },
+  "extends": [ "standard" ],
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
+  "rules": {
+    "no-console": 2,
+    "prefer-arrow-callback": 2,
+    "function-paren-newline": [2, { "minItems": 3 }],
+    "object-curly-newline": [2, { "multiline": true }],
+    "array-bracket-spacing": [2, "always"],
+    "padded-blocks": [2, "always"]
+  },
+  "ignorePatterns": [
+    "packages/",
+    "dist/",
+    "/test.js"
+  ]
+}
