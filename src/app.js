@@ -1,6 +1,7 @@
 const Koa = require('koa')
 const KoaRouter = require('@koa/router')
 
+const http = require('http')
 const util = require('util')
 const mounter = require('koa-mount')
 const compose = require('koa-compose')
@@ -18,7 +19,8 @@ const createApp = (opts) => {
     throwErrorOnNotFound: true,
     errorHandler: true,
     accessLog: true,
-    bodyParser: true
+    bodyParser: true,
+    closeTimeout: 15000
   }, opts || {})
 
   const production = opts.production === undefined
@@ -49,7 +51,9 @@ const createApp = (opts) => {
 
   const use = app.use.bind(app)
 
-  const listen = (port) => new Promise((resolve, reject) => {
+  const server = http.createServer(app.callback())
+
+  const listen = (bind) => new Promise((resolve, reject) => {
 
     if (opts.throwErrorOnNotFound) {
 
@@ -62,7 +66,9 @@ const createApp = (opts) => {
 
     }
 
-    app.listen(port, (err) => {
+    server.listen(bind, (err) => {
+
+      const { port } = server.address()
 
       if (err) {
 
@@ -86,10 +92,83 @@ const createApp = (opts) => {
 
   })
 
+  let closing = false
+  const connections = {}
+
+  app.on('connection', (conn) =>{
+
+    const key = `${conn.remoteAddress}:${conn.remotePort}`
+
+    connections[key] = conn
+
+    conn.on('close', () => { delete connections[key] })
+
+  })
+
+  const close = () => new Promise((resolve, reject) => {
+
+    closing = true
+
+    if (opts.logger) {
+
+      logger.info('Server shutting down. Closing all open connections.')
+
+    }
+
+    setTimeout(() => {
+
+      if (opts.logger) {
+
+        logger.error('Server shutdown timeout, forcefully shutting down')
+
+      }
+
+      process.exit(1)
+
+    }, opts.closeTimeout)
+
+    for (var key in connections) {
+
+      connections[key].destroy()
+
+    }
+
+    server.close((err) => {
+
+      if (err) {
+
+        reject(err)
+
+        return
+
+      }
+
+      resolve()
+
+    })
+
+  })
+
+  use((ctx, next) => {
+
+    if (!closing) {
+
+      return next()
+
+    }
+
+    ctx.set('Connection', 'close')
+
+    ctx.status = 503
+    ctx.body = ''
+
+  })
+
   return {
     logger,
-    listen,
     use,
+    listen,
+    close,
     app
   }
 

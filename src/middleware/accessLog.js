@@ -11,6 +11,7 @@ const accessLog = (opts) => {
 
   return async (ctx, next) => {
 
+    const start = Date.now()
     const requestId = ctx.request.header['x-request-id'] || uuid()
     const path = ctx.request.path
     const method = ctx.method
@@ -32,12 +33,13 @@ const accessLog = (opts) => {
 
     } finally {
 
+      const requestTime = Date.now() - start
       const statusCode = ctx.status
       const user = ctx.user ? ctx.user.id : undefined
 
       if (opts.logger) {
 
-        logger.debug('Request complete', { requestId, method, path, user, statusCode })
+        logger.debug('Request complete', { requestId, requestTime, method, path, user, statusCode })
 
       }
 
