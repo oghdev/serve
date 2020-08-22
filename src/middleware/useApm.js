@@ -24,6 +24,8 @@ const useApm = (opts) => {
     logger: opts.loggerInstance
   })
 
+  apm._instrumentation.agent._transport = apm._transport
+
   return async (ctx, next) => {
 
     const requestId = ctx.requestId
@@ -36,12 +38,20 @@ const useApm = (opts) => {
 
       }
 
-      apm.captureError(error, {
-        request: ctx.req,
-        response: ctx.res,
-        custom: { requestId },
-        labels: { requestId }
-      })
+      try {
+
+        apm.captureError(error, {
+          request: ctx.req,
+          response: ctx.res,
+          custom: { requestId },
+          labels: { requestId }
+        })
+
+      } catch (error) {
+
+        logger.error('Unable to send error to apm', { error })
+
+      }
 
     }
 
