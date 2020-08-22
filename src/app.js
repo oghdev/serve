@@ -8,6 +8,7 @@ const compose = require('koa-compose')
 
 const logger = require('./logger')
 const middleware = require('./middleware')
+const apm = require('./apm')
 
 const createServer = () => new Koa()
 
@@ -17,10 +18,12 @@ const createApp = (opts) => {
     logger: true,
     production: undefined,
     throwErrorOnNotFound: true,
+    apm: true,
     errorHandler: true,
     accessLog: true,
     bodyParser: true,
-    closeTimeout: 15000
+    closeTimeout: 15000,
+    ignoreClientErrors: true
   }, opts || {})
 
   const production = opts.production === undefined
@@ -29,17 +32,33 @@ const createApp = (opts) => {
 
   const app = createServer()
 
+  if (opts.accessLog) {
+
+    app.use(middleware.accessLog(opts))
+
+  }
+
+  app.use((ctx, next) => {
+
+    const requestId = ctx.requestId
+
+    ctx.on = (...args) => app.on(...args)
+    ctx.emit = (...args) => app.emit(...args)
+
+    ctx.logger = logger.child({ requestId })
+
+    apm.setTransactionName(`${ctx.method} ${ctx.path}`)
+    apm.setLabel('requestId', requestId)
+    
+    return next()
+
+  })
+
   if (opts.errorHandler) {
 
     app.use(middleware.errorHandler(opts))
 
     app.on('error', middleware.errorHandler.appErrorHandler(opts))
-
-  }
-
-  if (opts.accessLog) {
-
-    app.use(middleware.accessLog(opts))
 
   }
 
@@ -55,12 +74,17 @@ const createApp = (opts) => {
 
   const listen = (bind) => new Promise((resolve, reject) => {
 
+    if (opts.apm) {
+
+      app.use(middleware.useApm(opts))
+
+    }
+
     if (opts.throwErrorOnNotFound) {
 
       app.use((ctx, next) => {
 
-
-        throw { name: 'NotFoundError' }
+        throw Object.assign(new Error('Resource not found'), { name: 'NotFoundError', statusCode: 404 })
 
       })
 

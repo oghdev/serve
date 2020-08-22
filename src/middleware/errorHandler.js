@@ -40,17 +40,23 @@ const appErrorHandler = (opts) => {
 
   opts = Object.assign({ logger: true }, opts || {})
 
-  return (err) => {
+  return (error) => {
 
-    if (!err) {
+    if (!error) {
 
       return
 
     }
 
-    if (opts.logger) {
+    if (opts.logger && error.statusCode && error.statusCode > 499) {
 
-      const error = serializeError(err)
+      logger.error('Server error', { error })
+
+    } else if (opts.logger && error.statusCode && !opts.ignoreClientErrors) {
+
+      logger.debug('Client error', { error })
+
+    } else {
 
       logger.error('App error', { error })
 
@@ -75,11 +81,13 @@ const errorHandler = (opts) => {
 
       await next()
 
-    } catch (err) {
+    } catch (error) {
+
+      ctx.emit('error', error)
 
       const requestId = ctx.requestId
 
-      const resolvedErr = resolveError(err, opts.production)
+      const resolvedErr = resolveError(error, opts.production)
 
       const statusCode = resolvedErr.statusCode || 500
 
@@ -89,11 +97,13 @@ const errorHandler = (opts) => {
         error: resolvedErr
       }
 
-      if (opts.logger) {
-
-        const error = serializeError(err)
+      if (opts.logger && statusCode > 499) {
 
         logger.error('Server error', { error, requestId })
+
+      } else if (opts.logger && !opts.ignoreClientErrors) {
+
+        logger.debug('Client error', { error, requestId })
 
       }
 

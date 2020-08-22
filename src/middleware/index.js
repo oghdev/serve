@@ -3,11 +3,13 @@ const bodyParser = require('./bodyParser')
 const compress = require('./compress')
 const errorHandler = require('./errorHandler')
 const extractToken = require('./extractToken')
+const useApm = require('./useApm')
 
 module.exports = {
   accessLog,
   bodyParser,
   compress,
   errorHandler,
-  extractToken
+  extractToken,
+  useApm
 }

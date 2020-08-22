@@ -1,3 +1,5 @@
+const apm = require('./src/apm')
+
 const { createServer, createApp, createRouter } = require('./src/app')
 
 const middleware = require('./src/middleware')
@@ -8,5 +10,6 @@ module.exports = {
   createApp,
   createRouter,
   middleware,
-  handlers
+  handlers,
+  apm
 }
