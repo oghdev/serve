@@ -56,7 +56,7 @@ const appErrorHandler = (opts) => {
 
       logger.debug('Client error', { error })
 
-    } else {
+    } else if (opts.logger && !error.statusCode) {
 
       logger.error('App error', { error })
 
