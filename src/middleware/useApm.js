@@ -14,8 +14,6 @@ const useApm = (opts) => {
     ignoreClientErrors: opts.ignoreClientErrors || true
   }, opts || {})
 
-  console.log({ opts })
-
   const config = {
     serviceName: opts.serviceName,
     serviceVersion: opts.serviceVersion,
