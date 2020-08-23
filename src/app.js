@@ -42,9 +42,12 @@ const createApp = (opts) => {
     const requestId = ctx.requestId
 
     ctx.on = (...args) => app.on(...args)
+    ctx.once = (...args) => app.once(...args)
     ctx.emit = (...args) => app.emit(...args)
+    ctx.off = (...args) => app.off(...args)
+    ctx.removeAllListeners = (...args) => app.removeAllListeners(...args)
 
-    ctx.logger = logger.child({ requestId })
+    ctx.logger = logger.child({ subcomponent: 'request', requestId })
 
     return next()
 

@@ -8,8 +8,8 @@ const useApm = (opts) => {
     serviceVersion: opts.serviceVersion || process.env.APP_VERSION,
     serverUrl:  opts.serverUrl || process.env.APM_SERVER_URL,
     secretToken: opts.secretToken || process.env.APM_SERVER_TOKEN,
-    apiRequestTime: opts.apiRequestTime || '1s',
-    metricsInterval: opts.metricsInterval || '30s',
+    apiRequestTime: opts.apiRequestTime || process.env.APM_REQUEST_TIME || '1s',
+    metricsInterval: opts.metricsInterval || process.env.APM_METRICS_INTERVAL || '30s',
     loggerInstance: opts.loggerInstance || logger.child({ subcomponent: 'apm-agent' }),
     ignoreClientErrors: opts.ignoreClientErrors || true
   }, opts || {})
@@ -26,14 +26,17 @@ const useApm = (opts) => {
     captureExceptions: false
   }
 
+  if (!config.serverUrl) {
+
+    throw new Error('option serverUrl missing')
+
+  }
+
   apm.start(config)
 
   return async (ctx, next) => {
 
     const requestId = ctx.requestId
-
-    apm.setTransactionName(`${ctx.method} ${ctx.path}`)
-    apm.setLabel('requestId', requestId)
 
     const onError = (error) => {
 
@@ -64,19 +67,30 @@ const useApm = (opts) => {
 
     ctx.on('error', onError)
 
-    if (ctx.user) {
+    try {
 
-      const user = {
-        id: ctx.user.id,
-        email: ctx.user.email,
-        username: ctx.user.username
+      apm.setTransactionName(`${ctx.method} ${ctx.path}`)
+      apm.setLabel('requestId', requestId)
+
+      if (ctx.user) {
+
+        const user = {
+          id: ctx.user.id,
+          email: ctx.user.email,
+          username: ctx.user.username
+        }
+
+        apm.setUserContext(user)
+
       }
 
-      apm.setUserContext(user)
+      await next()
+
+    } finally {
+
+      ctx.off('error', onError)
 
     }
-
-    await next()
 
   }
 
