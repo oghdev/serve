@@ -8,8 +8,8 @@ const useApm = (opts) => {
     serviceVersion: opts.serviceVersion || process.env.APP_VERSION,
     serverUrl:  opts.serverUrl || process.env.APM_SERVER_URL,
     secretToken: opts.secretToken || process.env.APM_SERVER_TOKEN,
-    apiRequestTime: opts.apiRequestTime || '30s',
-    metricsInterval: opts.metricsInterval || '10s',
+    apiRequestTime: opts.apiRequestTime || '1s',
+    metricsInterval: opts.metricsInterval || '30s',
     loggerInstance: opts.loggerInstance || logger.child({ subcomponent: 'apm-agent' }),
     ignoreClientErrors: opts.ignoreClientErrors || true
   }, opts || {})
@@ -51,6 +51,8 @@ const useApm = (opts) => {
           custom: { requestId },
           labels: { requestId }
         })
+
+        logger.info('Error sent to apm', { error })
 
       } catch (error) {
 
