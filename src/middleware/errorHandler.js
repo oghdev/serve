@@ -1,6 +1,6 @@
 const { serializeError } = require('serialize-error')
 
-const logger = require('../logger')
+const { logger } = require('../logger')
 
 const resolveError = (err, production) => {
 
@@ -99,11 +99,11 @@ const errorHandler = (opts) => {
 
       if (opts.logger && statusCode > 499) {
 
-        logger.error('Server error', { error, requestId })
+        ctx.logger.error('Server error', { error, requestId })
 
       } else if (opts.logger && !opts.ignoreClientErrors) {
 
-        logger.debug('Client error', { error, requestId })
+        ctx.logger.debug('Client error', { error, requestId })
 
       }
 

@@ -1,8 +1,16 @@
 const { generateLogger, defaultTransport } = require('logger')
 
-const meta = { component: 'server' }
 const level = process.env.LOG_LEVEL || 'info'
+const defaultMeta = { component: 'server' }
 
-const logger = generateLogger(defaultTransport, { meta, level })
+const componentLogger = (meta) => {
 
-module.exports = logger
+  meta = Object.assign({}, defaultMeta, meta || {})
+
+  return generateLogger(defaultTransport, { meta, level })
+
+}
+
+const logger = componentLogger()
+
+module.exports = { logger, componentLogger }

@@ -6,7 +6,7 @@ const util = require('util')
 const mounter = require('koa-mount')
 const compose = require('koa-compose')
 
-const logger = require('./logger')
+const { logger } = require('./logger')
 const middleware = require('./middleware')
 
 const createServer = () => new Koa()
@@ -31,33 +31,19 @@ const createApp = (opts) => {
 
   const app = createServer()
 
-  if (opts.accessLog) {
-
-    app.use(middleware.accessLog(opts))
-
-  }
-
-  app.use((ctx, next) => {
-
-    const requestId = ctx.requestId
-
-    ctx.on = (...args) => app.on(...args)
-    ctx.once = (...args) => app.once(...args)
-    ctx.emit = (...args) => app.emit(...args)
-    ctx.off = (...args) => app.off(...args)
-    ctx.removeAllListeners = (...args) => app.removeAllListeners(...args)
-
-    ctx.logger = logger.child({ subcomponent: 'request', requestId })
-
-    return next()
-
-  })
+  app.use(middleware.context(app))
 
   if (opts.errorHandler) {
 
     app.use(middleware.errorHandler(opts))
 
     app.on('error', middleware.errorHandler.appErrorHandler(opts))
+
+  }
+
+  if (opts.accessLog) {
+
+    app.use(middleware.accessLog(opts))
 
   }
 

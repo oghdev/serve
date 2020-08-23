@@ -1,7 +1,3 @@
-const logger = require('../logger')
-
-const { serializeError } = require('serialize-error')
-
 const extractToken = (opts) => {
 
   opts = Object.assign({
@@ -21,6 +17,7 @@ const extractToken = (opts) => {
 
     const bearer = (ctx.request.header.authorization || '')
       .replace('Bearer', '')
+      .replace('JWT', '')
       .trim()
 
     const query = (ctx.request.query.access_token || '')
@@ -30,25 +27,11 @@ const extractToken = (opts) => {
 
     if (bearerToken) {
 
-      try {
+      const { user, claims } = await getUserFromToken(bearerToken)
 
-        const { user, claims } = await getUserFromToken(bearerToken)
-
-        ctx.user = user
-        ctx.claims = claims
-        ctx.token = token
-
-      } catch (err) {
-
-        if (opts.logger) {
-
-          const error = serializeError(err)
-
-          logger.info('Unable to assume jwt token', { error })
-
-        }
-
-      }
+      ctx.user = user
+      ctx.claims = claims
+      ctx.token = bearerToken
 
     }
 

@@ -1,5 +1,5 @@
 const apm = require('../apm')
-const logger = require('../logger')
+const { logger, componentLogger  } = require('../logger')
 
 const useApm = (opts) => {
 
@@ -10,7 +10,7 @@ const useApm = (opts) => {
     secretToken: opts.secretToken || process.env.APM_SERVER_TOKEN,
     apiRequestTime: opts.apiRequestTime || process.env.APM_REQUEST_TIME || '1s',
     metricsInterval: opts.metricsInterval || process.env.APM_METRICS_INTERVAL || '30s',
-    loggerInstance: opts.loggerInstance || logger.child({ subcomponent: 'apm-agent' }),
+    loggerInstance: opts.loggerInstance || componentLogger({ subcomponent: 'apm-agent' }),
     ignoreClientErrors: opts.ignoreClientErrors || true
   }, opts || {})
 
@@ -55,11 +55,11 @@ const useApm = (opts) => {
           labels: { requestId }
         })
 
-        logger.info('Error sent to apm', { error })
+        ctx.logger.info('Error sent to apm', { error })
 
       } catch (error) {
 
-        logger.error('Unable to send error to apm', { error })
+        ctx.logger.error('Unable to send error to apm', { error })
 
       }
 
