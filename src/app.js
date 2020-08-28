@@ -55,6 +55,9 @@ const createApp = (opts) => {
 
   const use = app.use.bind(app)
 
+  const on = app.on.bind(app)
+  const emit = app.emit.bind(app)
+
   const server = http.createServer(app.callback())
 
   const listen = (bind) => new Promise((resolve, reject) => {
@@ -177,6 +180,8 @@ const createApp = (opts) => {
     logger,
     use,
     listen,
+    on,
+    emit,
     close,
     app
   }
