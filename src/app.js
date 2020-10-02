@@ -2,7 +2,6 @@ const Koa = require('koa')
 const KoaRouter = require('@koa/router')
 
 const http = require('http')
-const util = require('util')
 const mounter = require('koa-mount')
 const compose = require('koa-compose')
 
@@ -13,9 +12,13 @@ const createServer = () => new Koa()
 
 const createApp = (opts) => {
 
+  const production = opts.production === undefined
+    ? process.env.NODE_ENV === 'production'
+    : opts.production === true
+
   opts = Object.assign({
     logger: true,
-    production: undefined,
+    production: production,
     throwErrorOnNotFound: true,
     apm: true,
     errorHandler: true,
@@ -24,10 +27,6 @@ const createApp = (opts) => {
     closeTimeout: 15000,
     ignoreClientErrors: true
   }, opts || {})
-
-  const production = opts.production === undefined
-    ? process.env.NODE_ENV === 'production'
-    : opts.production === true
 
   const app = createServer()
 
@@ -107,13 +106,17 @@ const createApp = (opts) => {
   let closing = false
   const connections = {}
 
-  app.on('connection', (conn) =>{
+  app.on('connection', (conn) => {
 
     const key = `${conn.remoteAddress}:${conn.remotePort}`
 
     connections[key] = conn
 
-    conn.on('close', () => { delete connections[key] })
+    conn.on('close', () => {
+
+      delete connections[key]
+
+    })
 
   })
 
