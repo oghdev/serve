@@ -1,6 +1,6 @@
 {
   "name": "serve",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -24,7 +24,7 @@
     "koa-compose": "^4.1.0",
     "koa-compress": "^5.0.1",
     "koa-mount": "^4.0.0",
-    "logger": "https://github.com/oghdev/logger/archive/0.1.2.tar.gz",
+    "logger": "https://github.com/oghdev/logger/archive/1.2.0.tar.gz",
     "serialize-error": "^7.0.1",
     "uuid": "^8.3.0"
   },
