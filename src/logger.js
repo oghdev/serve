@@ -5,7 +5,9 @@ const defaultMeta = { component: 'server' }
 
 const componentLogger = (meta) => {
 
-  meta = Object.assign({}, defaultMeta, meta || {})
+  meta = Object.assign(
+    {}, defaultMeta, meta || {}
+  )
 
   return generateLogger(defaultTransport(), { meta, level })
 

@@ -1,3 +1,3 @@
 const compress = require('koa-compress')
 
-module.exports = () => compress()
+module.exports = (opts) => compress(opts)

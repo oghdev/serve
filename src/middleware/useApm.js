@@ -1,12 +1,12 @@
 const apm = require('../apm')
-const { logger, componentLogger  } = require('../logger')
+const { componentLogger } = require('../logger')
 
 const useApm = (opts) => {
 
   opts = Object.assign({
     serviceName: opts.serviceName || process.env.APP_NAME,
     serviceVersion: opts.serviceVersion || process.env.APP_VERSION,
-    serverUrl:  opts.serverUrl || process.env.APM_SERVER_URL,
+    serverUrl: opts.serverUrl || process.env.APM_SERVER_URL,
     secretToken: opts.secretToken || process.env.APM_SERVER_TOKEN,
     apiRequestTime: opts.apiRequestTime || process.env.APM_REQUEST_TIME || '1s',
     metricsInterval: opts.metricsInterval || process.env.APM_METRICS_INTERVAL || '30s',

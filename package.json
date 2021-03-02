@@ -1,6 +1,6 @@
 {
   "name": "serve",
-  "version": "0.3.5",
+  "version": "0.4.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -17,23 +17,24 @@
   },
   "homepage": "https://github.com/oghdev/serve#readme",
   "dependencies": {
+    "@koa/cors": "^3.1.0",
     "@koa/router": "^9.4.0",
     "elastic-apm-node": "github:dominicporteous/apm-agent-nodejs#3.x",
-    "koa": "^2.13.0",
+    "koa": "^2.13.1",
     "koa-body": "^4.2.0",
     "koa-compose": "^4.1.0",
     "koa-compress": "^5.0.1",
     "koa-mount": "^4.0.0",
     "logger": "https://github.com/oghdev/logger/archive/1.2.0.tar.gz",
     "serialize-error": "^7.0.1",
-    "uuid": "^8.3.0"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "eslint": "^7.7.0",
+    "eslint": "^7.17.0",
     "eslint-config-standard": "^14.1.1",
-    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1"
+    "eslint-plugin-standard": "^4.1.0"
   }
 }

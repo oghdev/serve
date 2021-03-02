@@ -1,5 +1,3 @@
-const { logger } = require('../logger')
-
 const accessLog = (opts) => {
 
   opts = Object.assign({ logger: true }, opts || {})

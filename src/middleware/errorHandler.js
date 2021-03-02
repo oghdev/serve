@@ -1,5 +1,4 @@
 const { serializeError } = require('serialize-error')
-
 const { logger } = require('../logger')
 
 const resolveError = (err, production) => {

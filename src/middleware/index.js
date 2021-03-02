@@ -6,6 +6,11 @@ const errorHandler = require('./errorHandler')
 const extractToken = require('./extractToken')
 const useApm = require('./useApm')
 
+const withArgv = require('./withArgv')
+const withRequest = require('./withRequest')
+const withRequestSchema = require('./withRequestSchema')
+const withResponse = require('./withResponse')
+
 module.exports = {
   accessLog,
   bodyParser,
@@ -13,5 +18,9 @@ module.exports = {
   context,
   errorHandler,
   extractToken,
-  useApm
+  useApm,
+  withArgv,
+  withRequest,
+  withRequestSchema,
+  withResponse
 }

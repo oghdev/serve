@@ -3,17 +3,16 @@ const EventEmitter = require('events')
 const uuid = require('uuid').v4
 const { componentLogger } = require('../logger')
 
-const appName = process.env.APP_NAME
-const appVersion = process.env.APP_VERSION
-
 const context = (opts) => {
 
   opts = Object.assign({
     requestIdHeader: true,
-    poweredByHeader: true
+    poweredByHeader: true,
+    serviceName: opts.serviceName || process.env.APP_NAME,
+    serviceVersion: opts.serviceVersion || process.env.APP_VERSION
   }, opts || {})
 
-  return (ctx, next) => {
+  return async (ctx, next) => {
 
     const requestId = ctx.request.header['x-request-id'] || uuid()
     ctx.requestId = requestId
@@ -26,7 +25,7 @@ const context = (opts) => {
 
     if (opts.poweredByHeader) {
 
-      ctx.response.set('X-Powered-By', `${appName}/${appVersion}`)
+      ctx.response.set('X-Powered-By', `${opts.serviceName}/${opts.serviceVersion}`)
 
     }
 
@@ -42,7 +41,15 @@ const context = (opts) => {
 
     ctx.logger = componentLogger({ subcomponent: 'request', requestId })
 
-    return next()
+    try {
+
+      await next()
+
+    } finally {
+
+      emitter.removeAllListeners()
+
+    }
 
   }
 

@@ -20,7 +20,7 @@ const createApp = (opts) => {
     logger: true,
     production: production,
     throwErrorOnNotFound: true,
-    apm: true,
+    apm: false,
     errorHandler: true,
     accessLog: true,
     bodyParser: true,
@@ -179,14 +179,21 @@ const createApp = (opts) => {
 
   })
 
+  const useKeys = (keys) => {
+
+    app.keys = keys
+
+  }
+
   return {
-    logger,
-    use,
+    app,
+    close,
+    emit,
     listen,
     on,
-    emit,
-    close,
-    app
+    use,
+    useKeys,
+    logger
   }
 
 }
