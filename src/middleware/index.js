@@ -2,6 +2,7 @@ const accessLog = require('./accessLog')
 const bodyParser = require('./bodyParser')
 const compress = require('./compress')
 const context = require('./context')
+const cors = require('./cors')
 const errorHandler = require('./errorHandler')
 const extractToken = require('./extractToken')
 const useApm = require('./useApm')
@@ -16,6 +17,7 @@ module.exports = {
   bodyParser,
   compress,
   context,
+  cors,
   errorHandler,
   extractToken,
   useApm,
