@@ -9,7 +9,7 @@ const withArgv = (fn, fields) => {
       ctx.fields,
       ctx.files,
       ctx.params,
-      fields.reduce((acc, field) => Object.assign(acc, { [field]: ctx[field] }))
+      fields.reduce((acc, field) => Object.assign(acc, { [field]: ctx[field] }), {})
     )
 
     await fn(argv)
