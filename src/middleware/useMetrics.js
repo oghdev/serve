@@ -1,4 +1,4 @@
-const logger = require('../logger')
+const { logger } = require('../logger')
 const { Counter, register } = require('prom-client')
 const koaProm = require('koa-prometheus-adv')
 const compose = require('koa-compose')
