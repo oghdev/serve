@@ -69,8 +69,8 @@ const useMetrics = (opts) => {
   opts.counter = counter
 
   return compose([
-    promMiddleware(opts),
-    metricsHandler(opts)
+    metricsHandler(opts),
+    promMiddleware(opts)
   ])
 
 }
