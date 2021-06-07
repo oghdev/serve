@@ -24,6 +24,7 @@ const createApp = (opts) => {
     errorHandler: true,
     accessLog: true,
     bodyParser: true,
+    metrics: true,
     closeTimeout: 15000,
     ignoreClientErrors: true
   }, opts || {})
@@ -49,6 +50,12 @@ const createApp = (opts) => {
   if (opts.bodyParser) {
 
     app.use(middleware.bodyParser())
+
+  }
+
+  if (opts.metrics) {
+
+    app.use(middleware.useMetrics(opts))
 
   }
 

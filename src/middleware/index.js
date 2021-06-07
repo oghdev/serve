@@ -6,6 +6,7 @@ const cors = require('./cors')
 const errorHandler = require('./errorHandler')
 const extractToken = require('./extractToken')
 const useApm = require('./useApm')
+const useMetrics = require('./useMetrics')
 
 const withArgv = require('./withArgv')
 const withRequest = require('./withRequest')
@@ -21,6 +22,7 @@ module.exports = {
   errorHandler,
   extractToken,
   useApm,
+  useMetrics,
   withArgv,
   withRequest,
   withRequestSchema,

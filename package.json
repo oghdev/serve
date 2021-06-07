@@ -1,6 +1,6 @@
 {
   "name": "serve",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -25,7 +25,9 @@
     "koa-compose": "^4.1.0",
     "koa-compress": "^5.0.1",
     "koa-mount": "^4.0.0",
+    "koa-prometheus-adv": "^1.0.1",
     "logger": "https://github.com/oghdev/logger/archive/1.2.0.tar.gz",
+    "prom-client": "^13.1.0",
     "serialize-error": "^7.0.1",
     "uuid": "^8.3.2"
   },
