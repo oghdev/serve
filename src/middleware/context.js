@@ -15,7 +15,7 @@ const context = (opts) => {
   return async (ctx, next) => {
 
     const requestIdHeader = ctx.request.header['x-request-id']
-    const requestId = requestIdHeader && (requestIdHeader !== 'null' || requestIdHeader !== 'undefined') ? requestIdHeader : uuid()
+    const requestId = requestIdHeader && (requestIdHeader !== 'null' && requestIdHeader !== 'undefined') ? requestIdHeader : uuid()
 
     ctx.requestId = requestId
 
