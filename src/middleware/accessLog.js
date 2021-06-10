@@ -1,6 +1,6 @@
 const accessLog = (opts) => {
 
-  opts = Object.assign({ logger: true }, opts || {})
+  opts = Object.assign({ logger: true, loggerIgnoreMetrics: true }, opts || {})
 
   return async (ctx, next) => {
 
