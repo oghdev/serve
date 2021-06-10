@@ -5,8 +5,14 @@ const accessLog = (opts) => {
   return async (ctx, next) => {
 
     const start = Date.now()
-    const path = ctx.request.path
+    const path = ctx.request.originalUrl
     const method = ctx.method
+
+    if (path === '/metrics' && opts.loggerIgnoreMetrics) {
+
+      return next()
+
+    }
 
     if (opts.logger) {
 
