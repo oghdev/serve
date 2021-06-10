@@ -19,6 +19,14 @@ const resolveError = (err, production) => {
       statusCode: 404
     }
 
+  } else if (err.statusCode >= 400 && err.statusCode <= 499) {
+
+    return {
+      name: err.name || 'RequestError',
+      message: err.message,
+      statusCode: err.statusCode
+    }
+
   } else if (production) {
 
     return {
