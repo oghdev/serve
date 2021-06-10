@@ -20,11 +20,7 @@ const accessLog = (opts) => {
 
     }
 
-    try {
-
-      await next()
-
-    } finally {
+    ctx.res.on('finish', () => {
 
       const requestTime = Date.now() - start
       const statusCode = ctx.status
@@ -36,7 +32,9 @@ const accessLog = (opts) => {
 
       }
 
-    }
+    })
+
+    return next()
 
   }
 

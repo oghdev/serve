@@ -1,43 +1,128 @@
-const accessLog = (opts) => {
+const { serializeError } = require('serialize-error')
+const { logger } = require('../logger')
 
-  opts = Object.assign({ logger: true, loggerIgnoreMetrics: true }, opts || {})
+const resolveError = (err, production) => {
 
-  return async (ctx, next) => {
+  if (err.name === 'ValidationError') {
 
-    const start = Date.now()
-    const path = ctx.request.originalUrl
-    const method = ctx.method
-
-    if (path === '/metrics' && opts.loggerIgnoreMetrics) {
-
-      return next()
-
+    return {
+      name: 'ValidationError',
+      message: err.message,
+      statusCode: 400
     }
 
-    if (opts.logger) {
+  } else if (err.name === 'NotFoundError') {
 
-      ctx.logger.debug('Request inbound', { method, path })
-
+    return {
+      name: 'NotFoundError',
+      message: err.message,
+      statusCode: 404
     }
 
-    ctx.res.on('finish', () => {
+  } else if (err.statusCode >= 400 && err.statusCode <= 499) {
 
-      const requestTime = Date.now() - start
-      const statusCode = ctx.status
-      const user = ctx.user ? ctx.user.id : undefined
+    return {
+      name: err.name || 'RequestError',
+      message: err.message,
+      statusCode: err.statusCode
+    }
 
-      if (opts.logger) {
+  } else if (production) {
 
-        ctx.logger.debug('Request complete', { requestTime, method, path, user, statusCode })
+    return {
+      name: 'Error',
+      message: 'Internal server error',
+      statusCode: 500
+    }
 
-      }
+  } else {
 
-    })
-
-    return next()
+    return serializeError(err)
 
   }
 
 }
 
-module.exports = accessLog
+const appErrorHandler = (opts) => {
+
+  opts = Object.assign({ logger: true }, opts || {})
+
+  return (error) => {
+
+    if (!error) {
+
+      return
+
+    }
+
+    if (opts.logger && error.statusCode && error.statusCode > 499) {
+
+      logger.error('Server error', { error })
+
+    } else if (opts.logger && error.statusCode && !opts.ignoreClientErrors) {
+
+      logger.debug('Client error', { error })
+
+    } else if (opts.logger && !error.statusCode) {
+
+      logger.error('App error', { error })
+
+    }
+
+  }
+
+}
+
+const errorHandler = (opts) => {
+
+  opts = Object.assign({
+    logger: true,
+    production: false
+  }, opts || {})
+
+  return async (ctx, next) => {
+
+    try {
+
+      ctx.onerror = appErrorHandler(opts)
+
+      await next()
+
+    } catch (error) {
+
+      ctx.emit('error', error)
+
+      const requestId = ctx.requestId
+
+      const resolvedErr = resolveError(error, opts.production)
+
+      const statusCode = resolvedErr.statusCode || 500
+
+      const body = {
+        requestId,
+        status: statusCode,
+        error: resolvedErr
+      }
+
+      if (opts.logger && statusCode > 499) {
+
+        ctx.logger.error('Server error', { error, requestId })
+
+      } else if (opts.logger && !opts.ignoreClientErrors) {
+
+        ctx.logger.debug('Client error', { error, requestId })
+
+      }
+
+      ctx.status = statusCode
+      ctx.body = body
+
+    }
+
+  }
+
+}
+
+errorHandler.appErrorHandler = appErrorHandler
+
+module.exports = errorHandler
