@@ -16,6 +16,8 @@ const extractToken = (opts) => {
   return async (ctx, next) => {
 
     const bearer = (ctx.request.header.authorization || '')
+      .replace('bearer', '')
+      .replace('jwt', '')
       .replace('Bearer', '')
       .replace('JWT', '')
       .trim()
