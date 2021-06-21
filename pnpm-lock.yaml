@@ -17,6 +17,7 @@ specifiers:
   koa-mount: ^4.0.0
   koa-prometheus-adv: ^1.0.1
   logger: https://github.com/oghdev/logger/archive/refs/tags/2.0.0.tar.gz
+  maikai: ^0.8.1
   prom-client: ^13.1.0
   serialize-error: ^7.0.1
   uuid: ^8.3.2
@@ -32,6 +33,7 @@ dependencies:
   koa-mount: 4.0.0
   koa-prometheus-adv: 1.0.1
   logger: '@github.com/oghdev/logger/archive/refs/tags/2.0.0.tar.gz'
+  maikai: 0.8.1
   prom-client: 13.1.0
   serialize-error: 7.0.1
   uuid: 8.3.2
@@ -1422,6 +1424,11 @@ packages:
     dependencies:
       yallist: 4.0.0
     dev: true
+
+  /maikai/0.8.1:
+    resolution: {integrity: sha512-IIpBs/c+OmVjriOlx65ibXrCZiKHmyziO0Qy7qVt4OBp3a3RHnWbqSBA6M6KVTAhq9wbl4Fo4FcNzUK7ATPc4w==}
+    engines: {node: '>=8.2'}
+    dev: false
 
   /mapcap/1.0.0:
     resolution: {integrity: sha512-KcNlZSlFPx+r1jYZmxEbTVymG+dIctf10WmWkuhrhrblM+KMoF77HelwihL5cxYlORye79KoR4IlOOk99lUJ0g==}
