@@ -8,7 +8,7 @@ const accessLog = (opts) => {
     const path = ctx.request.originalUrl
     const method = ctx.method
 
-    if (path === '/metrics' && opts.loggerIgnoreMetrics) {
+    if ([ '/readyz', '/livez', '/metrics' ].includes(path) && opts.loggerIgnoreMetrics) {
 
       return next()
 
