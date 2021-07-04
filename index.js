@@ -1,5 +1,3 @@
-require('./src/apm')
-
 const { createServer, createApp, createRouter } = require('./src/app')
 const { logger, componentLogger } = require('./src/logger')
 
