@@ -20,7 +20,6 @@ const createApp = (opts) => {
     logger: true,
     production: production,
     throwErrorOnNotFound: true,
-    apm: false,
     errorHandler: true,
     accessLog: true,
     bodyParser: true,
@@ -67,12 +66,6 @@ const createApp = (opts) => {
   const server = http.createServer(app.callback())
 
   const listen = (bind) => new Promise((resolve, reject) => {
-
-    if (opts.apm) {
-
-      app.use(middleware.useApm(opts))
-
-    }
 
     if (opts.throwErrorOnNotFound) {
 

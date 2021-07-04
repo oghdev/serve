@@ -1,14 +1,13 @@
 const api = require('@opentelemetry/api')
+
 const { registerInstrumentations } = require('@opentelemetry/instrumentation')
 const { NodeTracerProvider } = require('@opentelemetry/node')
-const { BatchSpanProcessor } = require('@opentelemetry/tracing')
-const { ZoneContextManager } = require('@opentelemetry/context-zone')
+const { SimpleSpanProcessor } = require('@opentelemetry/tracing')
 const { JaegerExporter } = require('@opentelemetry/exporter-jaeger')
 const { ZipkinExporter } = require('@opentelemetry/exporter-zipkin')
 const { KoaInstrumentation } = require('@opentelemetry/instrumentation-koa')
 const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http')
 
-const contextManager = new ZoneContextManager()
 const tracerProvider = new NodeTracerProvider()
 
 const tracingMiddleware = (opts) => {
@@ -28,16 +27,17 @@ const tracingMiddleware = (opts) => {
     ? new JaegerExporter({ serviceName, tags })
     : new ZipkinExporter({ serviceName, tags })
 
-  const defaultProcessor = new BatchSpanProcessor(exporter)
+  const defaultProcessor = new SimpleSpanProcessor(exporter)
 
   tracerProvider.addSpanProcessor(opts.processor || defaultProcessor)
 
   const instrumentations = []
     .concat(opts.instrumentation, [ new KoaInstrumentation(), new HttpInstrumentation() ])
+    .filter((i) => !!i)
 
   registerInstrumentations({ instrumentations, tracerProvider })
 
-  tracerProvider.register({ contextManager })
+  tracerProvider.register()
 
   return (ctx, next) => {
 
@@ -62,7 +62,6 @@ const getCurrentSpan = () => api.trace.getSpan(api.context.active())
 
 module.exports = {
   tracerProvider,
-  contextManager,
   tracingMiddleware,
   getCurrentSpan
 }

@@ -5,7 +5,6 @@ const context = require('./context')
 const cors = require('./cors')
 const errorHandler = require('./errorHandler')
 const extractToken = require('./extractToken')
-const useApm = require('./useApm')
 const useMetrics = require('./useMetrics')
 
 const withArgv = require('./withArgv')
@@ -21,7 +20,6 @@ module.exports = {
   cors,
   errorHandler,
   extractToken,
-  useApm,
   useMetrics,
   withArgv,
   withRequest,
