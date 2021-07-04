@@ -15,14 +15,18 @@ const tracingMiddleware = (opts) => {
 
   opts = Object.assign({
     exporter: 'jaeger',
-    instrumentations: []
+    instrumentations: [],
+    serviceName: opts.serviceName || process.env.APP_NAME,
+    serviceVersion: opts.serviceVersion || process.env.APP_VERSION
   }, opts || {})
 
-  const serviceName = opts.serviceName
+  const { serviceVersion, serviceName } = opts
+
+  const tags = { serviceName, serviceVersion }
 
   const exporter = opts.exporter === 'jaeger'
-    ? new JaegerExporter({ serviceName })
-    : new ZipkinExporter({ serviceName })
+    ? new JaegerExporter({ serviceName, tags })
+    : new ZipkinExporter({ serviceName, tags })
 
   const defaultProcessor = new BatchSpanProcessor(exporter)
 
