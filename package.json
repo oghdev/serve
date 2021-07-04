@@ -1,6 +1,6 @@
 {
   "name": "serve",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -19,6 +19,15 @@
   "dependencies": {
     "@koa/cors": "^3.1.0",
     "@koa/router": "^9.4.0",
+    "@opentelemetry/api": "^1.0.1",
+    "@opentelemetry/context-zone": "^0.23.0",
+    "@opentelemetry/exporter-jaeger": "^0.23.0",
+    "@opentelemetry/exporter-zipkin": "^0.23.0",
+    "@opentelemetry/instrumentation": "^0.23.0",
+    "@opentelemetry/instrumentation-http": "^0.23.0",
+    "@opentelemetry/instrumentation-koa": "^0.23.0",
+    "@opentelemetry/node": "^0.23.0",
+    "@opentelemetry/tracing": "^0.23.0",
     "elastic-apm-node": "github:dominicporteous/apm-agent-nodejs#3.x",
     "koa": "^2.13.1",
     "koa-body": "^4.2.0",
