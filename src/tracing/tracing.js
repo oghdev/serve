@@ -16,8 +16,8 @@ const tracingMiddleware = (opts) => {
   opts = Object.assign({
     exporter: 'jaeger',
     instrumentations: [],
-    serviceName: opts.serviceName || process.env.APP_NAME,
-    serviceVersion: opts.serviceVersion || process.env.APP_VERSION
+    serviceName: process.env.APP_NAME,
+    serviceVersion: process.env.APP_VERSION
   }, opts || {})
 
   const { serviceVersion, serviceName } = opts
