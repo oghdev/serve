@@ -41,7 +41,7 @@ const tracingMiddleware = (opts) => {
   tracerProvider.addSpanProcessor(opts.processor || defaultProcessor)
 
   const instrumentations = []
-    .concat(opts.instrumentation, [ new KoaInstrumentation(), new HttpInstrumentation() ])
+    .concat(opts.instrumentations, [ new KoaInstrumentation(), new HttpInstrumentation() ])
     .filter((i) => !!i)
 
   registerInstrumentations({ instrumentations, tracerProvider })
