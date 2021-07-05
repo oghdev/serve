@@ -11,6 +11,7 @@ specifiers:
   '@opentelemetry/instrumentation-http': ^0.23.0
   '@opentelemetry/instrumentation-koa': ^0.23.0
   '@opentelemetry/node': ^0.23.0
+  '@opentelemetry/resources': ^0.23.0
   '@opentelemetry/semantic-conventions': ^0.23.0
   '@opentelemetry/tracing': ^0.23.0
   elastic-apm-node: github:dominicporteous/apm-agent-nodejs#3.x
@@ -43,6 +44,7 @@ dependencies:
   '@opentelemetry/instrumentation-http': 0.23.0_@opentelemetry+api@1.0.1
   '@opentelemetry/instrumentation-koa': 0.23.0_@opentelemetry+api@1.0.1
   '@opentelemetry/node': 0.23.0_@opentelemetry+api@1.0.1
+  '@opentelemetry/resources': 0.23.0_@opentelemetry+api@1.0.1
   '@opentelemetry/semantic-conventions': 0.23.0
   '@opentelemetry/tracing': 0.23.0_@opentelemetry+api@1.0.1
   elastic-apm-node: github.com/dominicporteous/apm-agent-nodejs/2946aa146fbf9f1b26e1979842796bb78d2d1098

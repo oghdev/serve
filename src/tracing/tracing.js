@@ -3,13 +3,12 @@ const api = require('@opentelemetry/api')
 const { registerInstrumentations } = require('@opentelemetry/instrumentation')
 const { NodeTracerProvider } = require('@opentelemetry/node')
 const { SimpleSpanProcessor } = require('@opentelemetry/tracing')
+const { Resource } = require('@opentelemetry/resources')
 const { ResourceAttributes } = require('@opentelemetry/semantic-conventions')
 const { JaegerExporter } = require('@opentelemetry/exporter-jaeger')
 const { ZipkinExporter } = require('@opentelemetry/exporter-zipkin')
 const { KoaInstrumentation } = require('@opentelemetry/instrumentation-koa')
 const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http')
-
-const tracerProvider = new NodeTracerProvider()
 
 const tracingMiddleware = (opts) => {
 
@@ -22,11 +21,16 @@ const tracingMiddleware = (opts) => {
   }, opts || {})
 
   const serviceName = opts.serviceName
+  const serviceVersion = opts.serviceVersion
 
-  const tags = Object.assign({
-    [ResourceAttributes.SERVICE_NAME]: opts.serviceName,
-    [ResourceAttributes.SERVICE_VERSION]: opts.serviceVersion
-  }, opts.tags)
+  const tracerProvider = new NodeTracerProvider({
+    resource: new Resource({
+      [ResourceAttributes.SERVICE_NAME]: serviceName,
+      [ResourceAttributes.SERVICE_VERSION]: serviceVersion
+    })
+  })
+
+  const tags = opts.tags
 
   const exporter = opts.exporter === 'jaeger'
     ? new JaegerExporter({ tags })
@@ -66,7 +70,6 @@ const tracingMiddleware = (opts) => {
 const getCurrentSpan = () => api.trace.getSpan(api.context.active())
 
 module.exports = {
-  tracerProvider,
   tracingMiddleware,
   getCurrentSpan
 }

@@ -1,6 +1,6 @@
 {
   "name": "serve",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -27,6 +27,7 @@
     "@opentelemetry/instrumentation-http": "^0.23.0",
     "@opentelemetry/instrumentation-koa": "^0.23.0",
     "@opentelemetry/node": "^0.23.0",
+    "@opentelemetry/resources": "^0.23.0",
     "@opentelemetry/semantic-conventions": "^0.23.0",
     "@opentelemetry/tracing": "^0.23.0",
     "elastic-apm-node": "github:dominicporteous/apm-agent-nodejs#3.x",
