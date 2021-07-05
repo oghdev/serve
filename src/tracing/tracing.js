@@ -44,7 +44,7 @@ const tracingMiddleware = (opts) => {
   tracerProvider.addSpanProcessor(opts.processor || defaultProcessor)
 
   const instrumentations = []
-    .concat(opts.instrumentations, [ new KoaInstrumentation(), new HttpInstrumentation() ])
+    .concat([ new HttpInstrumentation(), new KoaInstrumentation() ], opts.instrumentations)
     .filter((i) => !!i)
 
   registerInstrumentations({ instrumentations, tracerProvider })
@@ -56,7 +56,11 @@ const tracingMiddleware = (opts) => {
     exporter: exporter.name
   })
 
-  return (ctx, next) => {
+  return async (ctx, next) => {
+
+    ctx.tracer = api.trace.getTracer(serviceName, serviceVersion)
+
+    await next()
 
     const requestId = ctx.requestId
 
@@ -82,10 +86,6 @@ const tracingMiddleware = (opts) => {
 
     }
 
-    ctx.tracer = api.trace.getTracer(serviceName, serviceVersion)
-
-    return next()
-
   }
 
 }
@@ -97,14 +97,17 @@ const traceRoute = () => async (ctx, next) => {
   const path = ctx.path
   const method = ctx.method
 
-  logger.debug('Tracing route params', { requestId, params, path })
+  const span = getCurrentSpan()
+  const traceId = span.spanContext().traceId
+
+  logger.debug('Tracing route params', { requestId, traceId, method, params, path })
 
   const route = params
     ? Object.entries(params).reduce((acc, [ key, val ]) => acc.replace(`/${val}`, `/:${key}`), path)
     : path
 
-  const span = ctx.tracer.startSpan(`${method} ${route}`, { kind: api.SpanKind.SERVER })
-  const { traceId } = span.spanContext()
+  span.setAttribute('http.route', route)
+  span.setAttribute('http.params', JSON.stringify(params))
 
   logger.debug('Tracing route', { requestId, traceId, route })
 
@@ -114,11 +117,11 @@ const traceRoute = () => async (ctx, next) => {
 
       await next()
 
-      span.setStatus({ code: api.StatusCode.OK })
+      span.setStatus({ code: api.SpanStatusCode.OK })
 
     } catch (error) {
 
-      span.setStatus({ code: api.StatusCode.ERROR, message: error.message })
+      span.setStatus({ code: api.SpanStatusCode.ERROR, message: error.message })
 
     }
 
