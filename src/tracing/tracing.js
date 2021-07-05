@@ -52,7 +52,7 @@ const tracingMiddleware = (opts) => {
   tracerProvider.register()
 
   logger.debug('Loaded tracing modules', {
-    instrumentations: instrumentations.map((i) => `${i.instrumentationName}/${i.instrumentationVersion}`),
+    instrumentations: instrumentations.map((i) => `${i.instrumentationName}@${i.instrumentationVersion}`),
     exporter: exporter.name
   })
 
@@ -113,21 +113,7 @@ const traceRoute = () => async (ctx, next) => {
 
   logger.debug('Tracing route', { requestId, traceId, route })
 
-  await api.context.with(api.trace.setSpan(api.ROOT_CONTEXT, span), async () => {
-
-    try {
-
-      await next()
-
-      span.setStatus({ code: api.SpanStatusCode.OK })
-
-    } catch (error) {
-
-      span.setStatus({ code: api.SpanStatusCode.ERROR, message: error.message })
-
-    }
-
-  })
+  await next()
 
 }
 
