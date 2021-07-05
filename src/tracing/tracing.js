@@ -8,6 +8,9 @@ const { ResourceAttributes } = require('@opentelemetry/semantic-conventions')
 const { KoaInstrumentation } = require('@opentelemetry/instrumentation-koa')
 const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http')
 
+const { componentLogger } = require('../logger')
+const logger = componentLogger({ subcomponent: 'tracing' })
+
 const tracingMiddleware = (opts) => {
 
   opts = Object.assign({
@@ -47,6 +50,11 @@ const tracingMiddleware = (opts) => {
   registerInstrumentations({ instrumentations, tracerProvider })
 
   tracerProvider.register()
+
+  logger.debug('Loaded tracing modules', {
+    instrumentations: instrumentations.map((i) => `${i.instrumentationName}/${i.instrumentationName}`),
+    exporter: exporter.name
+  })
 
   return (ctx, next) => {
 
