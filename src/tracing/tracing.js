@@ -52,19 +52,21 @@ const tracingMiddleware = (opts) => {
   tracerProvider.register()
 
   logger.debug('Loaded tracing modules', {
-    instrumentations: instrumentations.map((i) => `${i.instrumentationName}/${i.instrumentationName}`),
+    instrumentations: instrumentations.map((i) => `${i.instrumentationName}/${i.instrumentationVersion}`),
     exporter: exporter.name
   })
 
   return (ctx, next) => {
 
-    if (ctx.requestId) {
+    const requestId = ctx.requestId
+
+    if (requestId) {
 
       const span = getCurrentSpan()
 
       if (!span) {
 
-        ctx.logger.debug('No captured trace for request')
+        logger.debug('No captured trace for request', { requestId })
 
         return next()
 
@@ -76,11 +78,11 @@ const tracingMiddleware = (opts) => {
       span.setAttribute('request.requestId', ctx.requestId)
       span.setAttribute('request.traceId', traceId)
 
-      ctx.logger.debug('Captured trace for request', { traceId })
+      logger.debug('Captured trace for request', { requestId, traceId })
 
     }
 
-    ctx.tracer = api.trace.getTracer(serviceName)
+    ctx.tracer = api.trace.getTracer(serviceName, serviceVersion)
 
     return next()
 
@@ -88,9 +90,47 @@ const tracingMiddleware = (opts) => {
 
 }
 
+const traceRoute = () => async (ctx, next) => {
+
+  const requestId = ctx.requestId
+  const params = ctx.params
+  const path = ctx.path
+  const method = ctx.method
+
+  logger.debug('Tracing route params', { requestId, params, path })
+
+  const route = params
+    ? Object.entries(params).reduce((acc, [ key, val ]) => acc.replace(`/${val}`, `/:${key}`), path)
+    : path
+
+  const span = ctx.tracer.startSpan(`${method} ${route}`, { kind: api.SpanKind.SERVER })
+  const { traceId } = span.spanContext()
+
+  logger.debug('Tracing route', { requestId, traceId, route })
+
+  await api.context.with(api.trace.setSpan(api.ROOT_CONTEXT, span), async () => {
+
+    try {
+
+      await next()
+
+      span.setStatus({ code: api.StatusCode.OK })
+
+    } catch (error) {
+
+      span.setStatus({ code: api.StatusCode.ERROR, message: error.message })
+
+    }
+
+  })
+
+}
+
 const getCurrentSpan = () => api.trace.getSpan(api.context.active())
 
 module.exports = {
   tracingMiddleware,
-  getCurrentSpan
+  traceRoute,
+  getCurrentSpan,
+  api
 }
