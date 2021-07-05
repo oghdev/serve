@@ -53,6 +53,15 @@ const tracingMiddleware = (opts) => {
     if (ctx.requestId) {
 
       const span = getCurrentSpan()
+
+      if (!span) {
+
+        ctx.logger.debug('No captured trace for request')
+
+        return next()
+
+      }
+
       const { traceId } = span.spanContext()
 
       span.setAttribute('request.date', new Date())
