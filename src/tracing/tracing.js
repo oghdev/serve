@@ -93,9 +93,10 @@ const tracingMiddleware = (opts) => {
 const traceRoute = () => async (ctx, next) => {
 
   const requestId = ctx.requestId
-  const params = ctx.params
-  const path = ctx.path
   const method = ctx.method
+  const path = ctx.originalUrl.split('?')[0]
+  const query = ctx.query
+  const params = ctx.params
 
   const span = getCurrentSpan()
   const traceId = span.spanContext().traceId
@@ -107,7 +108,8 @@ const traceRoute = () => async (ctx, next) => {
     : path
 
   span.setAttribute('http.route', route)
-  span.setAttribute('http.params', JSON.stringify(params))
+  span.setAttribute('http.routeParams', JSON.stringify(params))
+  span.setAttribute('http.queryParams', JSON.stringify(query))
 
   logger.debug('Tracing route', { requestId, traceId, route })
 
